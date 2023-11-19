@@ -5,7 +5,7 @@
 
 #define nrows 40
 #define ncols 40
-#define UPDATE_FREQUENCY 15 // Mettez à jour la grille tous les 10 frames
+#define UPDATE_FREQUENCY 15 // Update every 15 frames
 
 typedef unsigned int uint;
 
