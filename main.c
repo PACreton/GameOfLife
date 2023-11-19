@@ -25,10 +25,12 @@ struct cell_t
 
 typedef struct cell_t cell_t;
 
+const int coordinates[8][2] = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
+
 void checkNeighbors(cell_t **cell, unsigned int i, unsigned int j);
 void drawGrid(void); // Different from DrawGrid(), which is a function from raylib
 void drawCell(cell_t cell);
-cell_t **updateGrid(cell_t **cell);
+void updateGrid(cell_t **cell);
 bool indexIsValid(unsigned int i, unsigned int j);
 
 int framesCounter = 0;
@@ -92,7 +94,7 @@ int main(int argc, char **argv)
                 }
             }
 
-            cellGrid = updateGrid(cellGrid);
+            updateGrid(cellGrid);
         }
 
         BeginDrawing();
@@ -142,7 +144,7 @@ void drawGrid(void)
     {
         startPos.y = x;
         endPos.y = x;
-        DrawLineEx(startPos, endPos, 5.0, RAYWHITE);
+        DrawLineEx(startPos, endPos, 2.5, RAYWHITE);
     }
 
     startPos.y = 0;
@@ -153,7 +155,7 @@ void drawGrid(void)
     {
         startPos.x = y;
         endPos.x = y;
-        DrawLineEx(startPos, endPos, 5.0, RAYWHITE);
+        DrawLineEx(startPos, endPos, 2.5, RAYWHITE);
     }
 }
 
@@ -163,7 +165,7 @@ void drawCell(cell_t cell)
     {
         DrawRectangle(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, WHITE);
     }
-    else if (!cell.alive)
+    else
     {
         DrawRectangle(cell.i * cellWidth, cell.j * cellHeight, cellWidth - 3, cellHeight - 3, BLACK);
     }
@@ -171,8 +173,6 @@ void drawCell(cell_t cell)
 
 void checkNeighbors(cell_t **cell, unsigned int i, unsigned int j)
 {
-    int coordinates[8][2] = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
-
     cell[i][j].neighbors = 0;
     for (unsigned int indexI = 0; indexI < 8; indexI++)
     {
@@ -188,52 +188,20 @@ void checkNeighbors(cell_t **cell, unsigned int i, unsigned int j)
     }
 }
 
-cell_t **updateGrid(cell_t **cell)
+void updateGrid(cell_t **cell)
 {
-    cell_t **newGrid = malloc(nrows * sizeof(cell_t *));
-    for (unsigned int i = 0; i < nrows; i++)
-    {
-        newGrid[i] = malloc(ncols * sizeof(cell_t));
-        for (unsigned int j = 0; j < ncols; j++)
-        {
-            newGrid[i][j].i = cell[i][j].i;
-            newGrid[i][j].j = cell[i][j].j;
-            newGrid[i][j].neighbors = cell[i][j].neighbors;
-            newGrid[i][j].alive = cell[i][j].alive;
-        }
-    }
-
     for (unsigned int i = 0; i < nrows; i++)
     {
         for (unsigned int j = 0; j < ncols; j++)
         {
             if (cell[i][j].alive == false && cell[i][j].neighbors == 3)
             {
-                newGrid[i][j].alive = true;
+                cell[i][j].alive = true;
             }
             else if (cell[i][j].alive && (cell[i][j].neighbors < 2 || cell[i][j].neighbors > 3))
             {
-                newGrid[i][j].alive = false;
+                cell[i][j].alive = false;
             }
         }
     }
-
-    for (unsigned int i = 0; i < nrows; i++)
-    {
-        for (unsigned int j = 0; j < ncols; j++)
-        {
-            cell[i][j].i = newGrid[i][j].i;
-            cell[i][j].j = newGrid[i][j].j;
-            cell[i][j].neighbors = newGrid[i][j].neighbors;
-            cell[i][j].alive = newGrid[i][j].alive;
-        }
-    }
-
-    for (unsigned int i = 0; i < nrows; i++)
-    {
-        free(newGrid[i]);
-    }
-    free(newGrid);
-
-    return cell;
 }
