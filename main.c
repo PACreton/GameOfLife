@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
         framesCounter++;
 
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             Vector2 mPos = GetMousePosition();
             unsigned int indexI = mPos.x / cellWidth;
@@ -69,7 +69,20 @@ int main(int argc, char **argv)
 
             if (indexIsValid(indexI, indexJ))
             {
-                cellGrid[indexI][indexJ].alive = true;
+                if (!cellGrid[indexI][indexJ].alive)
+                    cellGrid[indexI][indexJ].alive = true;
+            }
+        }
+        else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+            Vector2 mPos = GetMousePosition();
+            unsigned int indexI = mPos.x / cellWidth;
+            unsigned int indexJ = mPos.y / cellHeight;
+
+            if (indexIsValid(indexI, indexJ))
+            {
+                if (cellGrid[indexI][indexJ].alive)
+                    cellGrid[indexI][indexJ].alive = false;
             }
         }
 
